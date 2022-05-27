@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  Prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - host
+    volumes:
+      - src/main/resources:/etc/prometheus
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+
+  Grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - host
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  observability-api:
+    container_name: observability-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - host
+    ports:
+      - "8081:8081"
+
+networks:
+  host:
+
+volumes:
+  prometheus-data:
+  grafana-data:
